@@ -1,0 +1,33 @@
+{
+    "headers": {
+        "host": "04a1-89-181-155-219.ngrok-free.app",
+        "content-length": "955",
+        "content-type": "application/json; charset=utf-8",
+        "request-id": "31068908-47c6-4825-8bf1-6c9c65a32ec8",
+        "request-timestamp": "5/25/2025 11:28:44 PM +00:00",
+        "x-forwarded-for": "40.126.19.41",
+        "x-forwarded-host": "04a1-89-181-155-219.ngrok-free.app",
+        "x-forwarded-proto": "https",
+        "accept-encoding": "gzip"
+    },
+    "query_params": {},
+    "body": {
+        "value": [
+            {
+                "subscriptionId": "7aef7f46-449b-464b-8062-a03abcc7141c",
+                "subscriptionExpirationDateTime": "2025-05-28T21:51:27+00:00",
+                "changeType": "created",
+                "resource": "Users/d5b40c6f-745f-4168-af2a-78648c5c91dd/Messages/AAMkADE3MDBhYmViLTBjZmYtNDgzYi1iZGZiLTUyNDQyZWM5NjUyNwBGAAAAAAC1ifAssnLwS6d4BfPk9eJSBwBh8kfJqkjdTbLsol05oIVjAAAAAAEMAABh8kfJqkjdTbLsol05oIVjAAA8TXMHAAA=",
+                "resourceData": {
+                    "@odata.type": "#Microsoft.Graph.Message",
+                    "@odata.id": "Users/d5b40c6f-745f-4168-af2a-78648c5c91dd/Messages/AAMkADE3MDBhYmViLTBjZmYtNDgzYi1iZGZiLTUyNDQyZWM5NjUyNwBGAAAAAAC1ifAssnLwS6d4BfPk9eJSBwBh8kfJqkjdTbLsol05oIVjAAAAAAEMAABh8kfJqkjdTbLsol05oIVjAAA8TXMHAAA=",
+                    "@odata.etag": "W/\"CQAAABYAAABh8kfJqkjdTbLsol05oIVjAAA8U7I5\"",
+                    "id": "AAMkADE3MDBhYmViLTBjZmYtNDgzYi1iZGZiLTUyNDQyZWM5NjUyNwBGAAAAAAC1ifAssnLwS6d4BfPk9eJSBwBh8kfJqkjdTbLsol05oIVjAAAAAAEMAABh8kfJqkjdTbLsol05oIVjAAA8TXMHAAA="
+                },
+                "clientState": "secretClientState",
+                "tenantId": "603ed676-f3c9-4f17-9b7a-0087ca5a324b"
+            }
+        ]
+    },
+    "timestamp": "2025-05-25T20:28:46.654469"
+}
