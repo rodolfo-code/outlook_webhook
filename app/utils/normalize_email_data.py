@@ -1,4 +1,4 @@
-from app.models.email import Email
+from models.email import Email
 
 
 def normalize_email_data(email_data: dict) -> Email:

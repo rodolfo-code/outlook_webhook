@@ -8,7 +8,7 @@ import hmac
 import hashlib
 import logging
 
-from app.config import PRIVATE_KEY
+from config import PRIVATE_KEY
 
 logger = logging.getLogger(__name__)
 

@@ -1,0 +1,11 @@
+services:
+  app:
+    build: .
+    container_name: webhook-app
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./app:/app
+    env_file:
+      - .env
+    command: uvicorn main:app --host 0.0.0.0 --port 3000 --reload

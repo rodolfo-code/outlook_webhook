@@ -1,46 +1,19 @@
 import logging
-from datetime import datetime, timedelta
-from msgraph import GraphServiceClient
-from datetime import datetime, timedelta, timezone 
-from azure.identity.aio import ClientSecretCredential
+
+from fastapi import Depends
+from services.client import GraphClient
+from datetime import datetime, timedelta, timezone
 from msgraph.generated.models.subscription import Subscription
-from app.config import CLIENT_SECRET_STATE, ENCRYPTION_CERTIFICATE, ENCRYPTION_CERTIFICATE_ID, TENANT_ID, CLIENT_ID, CLIENT_SECRET, GRAPH_API_ENDPOINT, GRAPH_API_SCOPE, SUBSCRIPTION_EXPIRATION_DAYS, WEBHOOK_LIFECYCLE_ENDPOINT, WEBHOOK_NOTIFICATION_ENDPOINT
-from app.models.email import Email
-from app.utils.normalize_email_data import normalize_email_data
 
-class GraphAPI:
-    def __init__(self):
-        self.client: GraphServiceClient
-        self.initialize_graph_client()
+from config import CLIENT_SECRET_STATE, SUBSCRIPTION_EXPIRATION_DAYS, WEBHOOK_LIFECYCLE_ENDPOINT, WEBHOOK_NOTIFICATION_ENDPOINT
 
-    def initialize_graph_client(self):
-        """
-        Inicializa o cliente do Microsoft Graph API.
-        """
+logger = logging.getLogger(__name__)
 
-        try:
-            logging.info("Criando credenciais usando Azure Identity...")
+class SubscriptionService:
+    def __init__(self, graph_client: GraphClient = Depends(GraphClient)):
+        self.client = graph_client.client
 
-            credentials = ClientSecretCredential(
-                tenant_id=TENANT_ID,
-                client_id=CLIENT_ID,
-                client_secret=CLIENT_SECRET
-            )
-            
-            # Inicializa o cliente Graph
-            self.client = GraphServiceClient(credentials=credentials)
-
-            logging.info("Cliente do Microsoft Graph API inicializado com sucesso.")
-
-        except Exception as e:
-            logging.error(f"Erro ao inicializar cliente do Microsoft Graph Client: {e}")
-            raise
-
-            # ?$select=subject,body,receivedDateTime,from"
-    async def create_subscription(self, 
-                    resource: str,
-                    change_type: str = "created"
-                ):
+    async def create_subscription(self, resource: str, change_type: str = "created"):
         """
         Cria uma assinatura (webhook) para receber notificações quando novos e-mails chegarem.
 
@@ -65,8 +38,8 @@ class GraphAPI:
             subscription.change_type = change_type
 
             # A URL HTTPS para onde o Microsoft Graph enviará as notificações de eventos.            
-            subscription.notification_url = "https://04a1-89-181-155-219.ngrok-free.app/webhook/notification"
-            # subscription.notification_url = WEBHOOK_NOTIFICATION_ENDPOINT
+            subscription.notification_url = WEBHOOK_NOTIFICATION_ENDPOINT
+            # subscription.notification_url = "https://d72c-89-181-155-219.ngrok-free.app/webhook/notification"
 
             # URL opcional para onde o Microsoft Graph enviará notificações sobre o ciclo de vida da subscription.
             # Ex: Notificações de expiração iminente, problemas de validação, etc.
@@ -101,16 +74,20 @@ class GraphAPI:
             logging.error(f"Erro ao criar subscription: {e}")
             raise
 
-
     async def list_subscriptions(self):
             """
             Lista todas as subscriptions ativas.
             """
             try:
                 logging.info("Listando subscriptions...")
-                subscriptions = await self.client.subscriptions.get()
-                logging.info(f"Subscriptions encontradas: {len(subscriptions.value)}")
-                return subscriptions.value
+                result = await self.client.subscriptions.get()
+
+                subscriptions_list = []
+                for subscription in result.value:
+                    subscriptions_list.append(subscription.id)
+
+                logging.info(f"Subscriptions encontradas: {len(subscriptions_list)}")
+                return subscriptions_list
             except Exception as e:
                 logging.error(f"Erro ao listar subscriptions: {e}")
                 raise
@@ -130,29 +107,3 @@ class GraphAPI:
         except Exception as e:
             logging.error(f"Erro ao deletar subscription {subscription_id}: {e}")
             raise
-
-
-    async def get_email_data(self, payload: dict) -> dict: 
-        """
-        Obtém os dados de uma mensagem de e-mail específica.
-        
-        Args:
-            resource: O recurso da mensagem de e-mail a ser obtido
-        """
-
-        resource = payload.get("value")[0].get("resource").split("/")
-        user_id = resource[1]
-        message_id = resource[3]
-        
-        try:
-            logging.info(f"Obtendo dados da mensagem de e-mail {user_id} {message_id}...")
-
-            email_data = await self.client.users.by_user_id(user_id).messages.by_message_id(message_id).get()
-
-            logging.info(f"Dados da mensagem de e-mail obtidos com sucesso.")
-            
-            return normalize_email_data(email_data)
-        except Exception as e:
-            logging.error(f"Erro ao obter dados da mensagem de e-mail {user_id} {message_id}: {e}")
-            raise
-
